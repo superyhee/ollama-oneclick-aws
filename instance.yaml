@@ -115,9 +115,20 @@ Resources:
             apt-get install -y nvidia-container-toolkit
             nvidia-ctk runtime configure --runtime=docker
             systemctl restart docker
-            docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama --restart always ollama/ollama
-            docker exec -it ollama ollama pull gemma:2b
+            
+            container_id=$(docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama --restart always ollama/ollama)
             docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v ollama-webui:/app/backend/data --name ollama-webui --restart always ghcr.io/ollama-webui/ollama-webui:main
+            echo "waiting ollama starting..."
+            while true; do
+              if docker inspect -f '{{.State.Running}}' $container_id | grep -q "true"; then
+            echo "ollama started"
+              break
+              else
+            echo "waiting ollama starting..."
+              sleep 1
+              fi
+            done
+            docker exec -it ollama ollama pull gemma:2b
   MyEIP:
     Type: AWS::EC2::EIP
 

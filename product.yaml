@@ -79,6 +79,14 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 11434
+          ToPort: 11434
+          CidrIp: 0.0.0.0/0
 
   MySecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -124,16 +132,38 @@ Resources:
       Matcher:
         HttpCode: '200'
 
+  MyTargetGroup1:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: MyTargetGroup1
+      Port: 3000
+      Protocol: HTTP
+      VpcId: !Ref MyVPC
+      HealthCheckEnabled: true
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      Matcher:
+        HttpCode: '200'
+
 
   MyListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref MyLoadBalancer
-      Port: 80
+      Port: 11434
       Protocol: HTTP
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref MyTargetGroup
+  MyListener1:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref MyLoadBalancer
+      Port: 3000
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref MyTargetGroup1
 
   MyLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
@@ -174,18 +204,19 @@ Resources:
                 systemctl restart docker
                 docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama --restart always ollama/ollama
                 docker exec -it ollama ollama pull gemma:2b
-                docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v ollama-webui:/app/backend/data --name ollama-webui --restart always ghcr.io/ollama-webui/ollama-webui:main
+                # docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v ollama-webui:/app/backend/data --name ollama-webui --restart always ghcr.io/ollama-webui/ollama-webui:main
   MyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      MinSize: 0
-      MaxSize: 1
-      DesiredCapacity: 1
+      MinSize: !Ref MinSize
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
       VPCZoneIdentifier:
         - !Ref MyPublicSubnet1
         - !Ref MyPublicSubnet2
       TargetGroupARNs:
         - !Ref MyTargetGroup
+        - !Ref MyTargetGroup1
       MixedInstancesPolicy:
         InstancesDistribution:
           OnDemandBaseCapacity: 1
@@ -198,6 +229,10 @@ Resources:
           Overrides:
             - InstanceType: g5.xlarge
             - InstanceType: g5.2xlarge
+            - InstanceType: g5.4xlarge
+            - InstanceType: g4dn.xlarge
+            - InstanceType: g4dn.2xlarge
+            - InstanceType: g4dn.4xlarge
 
 Parameters:
   InstanceAMI:
@@ -221,3 +256,19 @@ Parameters:
       - g5.2xlarge
       - g5.4xlarge
       - g5.8xlarge
+  MinSize:
+    Type: Number
+    Default: 0
+    Description: Minimum number of instances for the Auto Scaling Group
+  MaxSize:
+    Type: Number
+    Default: 5
+    Description: Maximum number of instances for the Auto Scaling Group
+  DesiredCapacity:
+    Type: Number
+    Default: 2
+    Description: Desired capacity of instances for the Auto Scaling Group
+Outputs:
+  MyLoadBalancerDNSName:
+    Description: The DNS name of the MyLoadBalancer
+    Value: !GetAtt MyLoadBalancer.DNSName
