@@ -26,7 +26,9 @@ This project provides a CloudFormation template (instance.yaml) with the followi
 First, log in to the Amazon Web Service (AWS) Console and create an EC2 key pair.
 Installation and Execution:
 Create an EC2 key pair through the AWS Console.
-![1](images/keypair.png)  
+![0](images/keypair.png)  
+Upload template file to console
+![11](images/select_cf.png)  
 Find the AMI ID through the console interface:
 ![2](images/ami.png)  
 Install and run the project through the AWS Console interface:
@@ -56,10 +58,11 @@ Copy code
 aws cloudformation delete-stack --stack-name MyStack
 ```
 
-Wait for about 5 minutes for the EC2 to initialize the environment and install NVIDIA drivers and Ollama.
+Wait for about 5 minutes for the EC2 to initialize the environment and install Ollama.
 
 Connect to the EC2 via SSH and tail -f /var/log/cloud-init-output.log to check the installation progress.
 
 Connect to the EC2 via SSH and run nvidia-smi to see the NVIDIA system management interface.
-
+![3](images/nvidia.png)
 Access the UI interface at the output address http://public_ip/3000 to see the UI interface.
+![3](images/ollama.png)
