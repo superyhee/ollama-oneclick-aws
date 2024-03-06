@@ -84,7 +84,7 @@ Resources:
             VolumeSize: 100
             VolumeType: gp3
       "Tags" : [
-            {"Key" : "Name", "Value" : "stablediffusion-onclick"},
+            {"Key" : "Name", "Value" : "ollama-onclick"},
         ]
       KeyName: !Ref KeyPairName
       # SecurityGroupIds:
