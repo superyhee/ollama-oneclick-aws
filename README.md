@@ -34,7 +34,7 @@ Find the AMI ID through the console interface:
 Install and run the project through the AWS Console interface:
 ![3](images/input.png)  
 After installation, the interface outputs the IP address for access:
-!4](images/output.png)  
+![4](images/output.png)  
 Alternatively, you can create a new stack named MyStack using the following command-line AWS CloudFormation template. To install and configure AWS CLI, follow the [AWS CLI official documentation](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
 bash
 Copy code
@@ -63,6 +63,6 @@ Wait for about 5 minutes for the EC2 to initialize the environment and install O
 Connect to the EC2 via SSH and tail -f /var/log/cloud-init-output.log to check the installation progress.
 
 Connect to the EC2 via SSH and run nvidia-smi to see the NVIDIA system management interface.
-![3](images/nvidia.png)
+![5](images/nvidia.png)
 Access the UI interface at the output address http://public_ip/3000 to see the UI interface.
-![3](images/ollama.png)
+![6](images/ollama.png)
