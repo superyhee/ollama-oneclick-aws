@@ -203,7 +203,7 @@ Resources:
                 nvidia-ctk runtime configure --runtime=docker
                 systemctl restart docker
                 docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama --restart always ollama/ollama
-                docker exec -it ollama ollama pull gemma:2b
+                docker exec -it ollama ollama pull deepseek-r1:1.5b
                 # docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v ollama-webui:/app/backend/data --name ollama-webui --restart always ghcr.io/ollama-webui/ollama-webui:main
   MyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
