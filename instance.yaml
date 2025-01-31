@@ -128,7 +128,7 @@ Resources:
               sleep 1
               fi
             done
-            docker exec -it ollama ollama pull gemma:2b
+            docker exec -it ollama ollama pull deepseek-r1:1.5b
   MyEIP:
     Type: AWS::EC2::EIP
 
