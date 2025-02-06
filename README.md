@@ -72,3 +72,5 @@ Connect to the EC2 via SSH and run nvidia-smi to see the NVIDIA system managemen
 
 Access the UI interface at the output address http://public_ip/3000 to see the UI interface.
 ![6](images/ollama.png)
+download deepseek model by ui
+![7](images/download.png)
